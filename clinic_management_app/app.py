@@ -6,9 +6,14 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///clinic.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+# ==========================
+# Tạo bảng khi chạy lần đầu (Render + Gunicorn)
+# ==========================
 @app.before_first_request
 def init_db():
     db.create_all()
+
 # ==========================
 # Database Models
 # ==========================
@@ -67,6 +72,4 @@ def search_patient():
     return jsonify([{'id': p.id, 'name': p.name, 'dob': p.dob, 'phone': p.phone} for p in results])
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run()
