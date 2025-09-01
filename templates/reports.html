@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Báo cáo{% endblock %}
+{% block content %}
+<h3 class="mb-3">Báo cáo 📊</h3>
+<form class="row g-2 mb-3">
+  <div class="col-md-4"><label class="form-label">Từ ngày</label><input type="date" name="from" class="form-control" value="{{ request.args.get('from','') }}"></div>
+  <div class="col-md-4"><label class="form-label">Đến ngày</label><input type="date" name="to" class="form-control" value="{{ request.args.get('to','') }}"></div>
+  <div class="col-md-4"><label class="form-label">&nbsp;</label><button class="btn btn-outline-primary d-block w-100">Lọc</button></div>
+</form>
+<div class="row g-3 mb-3">
+  <div class="col-md-4"><div class="card shadow-sm"><div class="card-body"><div class="fw-semibold">Giá vốn</div><div class="display-6">{{ "%.2f"|format(total_cost or 0) }}</div></div></div></div>
+  <div class="col-md-4"><div class="card shadow-sm"><div class="card-body"><div class="fw-semibold">Doanh thu</div><div class="display-6">{{ "%.2f"|format(total_rev or 0) }}</div></div></div></div>
+  <div class="col-md-4"><div class="card shadow-sm"><div class="card-body"><div class="fw-semibold">Lợi nhuận</div><div class="display-6">{{ "%.2f"|format(total_profit or 0) }}</div></div></div></div>
+</div>
+<div class="card shadow-sm">
+  <div class="card-header fw-semibold">Chi tiết xuất thuốc (FIFO)</div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead><tr><th>Ngày</th><th>Visit</th><th>Thuốc</th><th>Lô</th><th>SL</th><th>Giá vốn</th><th>Giá bán</th><th>Lợi nhuận</th></tr></thead>
+        <tbody>
+          {% for d in rows %}
+          <tr>
+            <td>{{ d.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>#{{ d.visit_id }}</td>
+            <td>{{ d.medicine.name }}</td>
+            <td>{{ d.lot.lot_no if d.lot else '-' }}</td>
+            <td>{{ d.qty }}</td>
+            <td>{{ "%.2f"|format(d.unit_cost) }}</td>
+            <td>{{ "%.2f"|format(d.unit_price) }}</td>
+            <td>{{ "%.2f"|format((d.unit_price-d.unit_cost)*d.qty) }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8" class="text-muted">Chưa có dữ liệu.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,13 +1,4 @@
-# Clinic Management App (Flask) - Render Ready
-
-- Deploy Render thông qua `render.yaml` (đã set `rootDir: clinic_management_app`).
-- Start bằng Gunicorn.
-
-## Local
-```bash
-cd clinic_management_app
-python -m venv .venv
-source .venv/bin/activate      # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-python app.py
-```
+# Clinic Management (Render-ready)
+- Build Command: `pip install -r clinic_management_app/requirements.txt`
+- Start Command: `cd clinic_management_app && gunicorn app:app --workers 1 --bind 0.0.0.0:$PORT`
+- Root Directory: (leave empty)

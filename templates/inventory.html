@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Kho thuốc{% endblock %}
+{% block content %}
+<h3 class="mb-3">Kho thuốc 💊</h3>
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-header fw-semibold">Thêm thuốc</div>
+      <div class="card-body">
+        <form class="row g-2" method="post" action="/inventory/add_medicine">
+          <div class="col-12">
+            <label class="form-label">Tên thuốc *</label>
+            <input name="name" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Dạng</label>
+            <input name="form" class="form-control" placeholder="viên/gói/lọ/chai/ống tiêm...">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Đơn vị tính</label>
+            <input name="unit" class="form-control" placeholder="viên/hộp/chai...">
+          </div>
+          <div class="col-12"><button class="btn btn-outline-primary mt-2">Thêm thuốc</button></div>
+        </form>
+      </div>
+    </div>
+    <div class="card shadow-sm mt-3">
+      <div class="card-header fw-semibold">Nhập kho (lô)</div>
+      <div class="card-body">
+        <form class="row g-2" method="post" action="/inventory/add_lot">
+          <div class="col-12">
+            <label class="form-label">Thuốc</label>
+            <select name="medicine_id" class="form-select">
+              {% for m in meds %}<option value="{{ m.id }}">{{ m.name }} ({{ m.form or '-' }})</option>{% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6"><label class="form-label">Số lô</label><input name="lot_no" class="form-control"></div>
+          <div class="col-md-6"><label class="form-label">Ngày nhập</label><input type="date" name="received_date" class="form-control"></div>
+          <div class="col-md-6"><label class="form-label">Hạn dùng</label><input type="date" name="expiry_date" class="form-control"></div>
+          <div class="col-md-6"><label class="form-label">Số lượng nhập</label><input type="number" name="qty_in" class="form-control" min="1" value="1" required></div>
+          <div class="col-md-6"><label class="form-label">Chế độ giá</label><select name="price_mode" class="form-select"><option value="unit">Nhập đơn giá</option><option value="total">Nhập giá tổng</option></select></div>
+          <div class="col-md-6"><label class="form-label">Giá (đơn giá hoặc tổng)</label><input type="number" step="0.01" name="price" class="form-control" min="0" value="0"></div>
+          <div class="col-12"><button class="btn btn-success mt-2">Nhập kho</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-header fw-semibold">Danh sách kho hiện tại</div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped align-middle">
+            <thead><tr><th>#</th><th>Tên thuốc</th><th>Dạng</th><th>Lô</th><th>Hạn dùng</th><th>Tồn</th><th>Giá vốn TB*</th></tr></thead>
+            <tbody>
+              {% for row in lots %}
+              {% set lot = row[0] %}
+              <tr>
+                <td>{{ lot.id }}</td>
+                <td>{{ row.med_name }}</td>
+                <td>{{ row.med_form or '-' }}</td>
+                <td>{{ lot.lot_no or '-' }}</td>
+                <td>{% if lot.expiry_date %}{{ lot.expiry_date.strftime('%Y-%m-%d') }}{% else %}-{% endif %}</td>
+                <td>{{ lot.qty_remaining }}</td>
+                <td>{{ "%.2f"|format(lot.unit_cost or 0) }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="7" class="text-muted">Chưa có lô nào.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="form-text">* Ở cấp lô, “giá vốn TB” chính là đơn giá nhập của lô.</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
