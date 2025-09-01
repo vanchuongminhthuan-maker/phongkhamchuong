@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Phòng Khám</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; height: 100vh; margin: 0; }
+        .patients { width: 50%; padding: 20px; border-right: 2px solid #ccc; overflow-y: auto; }
+        .menu { width: 50%; padding: 20px; }
+        h2 { margin-top: 0; }
+        form { margin-bottom: 15px; }
+        input, select { margin: 5px 0; padding: 5px; width: 100%; }
+        button { padding: 8px 12px; background: red; color: white; border: none; cursor: pointer; }
+        button:hover { background: darkred; }
+    </style>
+</head>
+<body>
+    <div class="patients">
+        <h2>Bệnh nhân trong ngày</h2>
+        <ul>
+            {% for p in patients %}
+                <li>{{ p.name }} - {{ p.dob }} - {{ p.phone }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="menu">
+        <h2>Thêm bệnh nhân</h2>
+        <form method="POST" action="/add_patient">
+            <input type="text" name="name" placeholder="Họ và tên" required>
+            <input type="text" name="dob" placeholder="Ngày sinh">
+            <input type="text" name="phone" placeholder="Số điện thoại">
+            <button type="submit">Thêm</button>
+        </form>
+
+        <h2>Nhập thuốc</h2>
+        <form method="POST" action="/add_medicine">
+            <input type="text" name="name" placeholder="Tên thuốc" required>
+            <input type="text" name="form" placeholder="Dạng thuốc (viên, gói, lọ...)">
+            <input type="number" name="quantity" placeholder="Số lượng" required>
+            <input type="number" step="0.01" name="price" placeholder="Giá lẻ" required>
+            <input type="number" step="0.01" name="total_cost" placeholder="Giá tổng" required>
+            <button type="submit">Nhập kho</button>
+        </form>
+    </div>
+</body>
+</html>
