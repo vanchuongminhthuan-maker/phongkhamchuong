@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: clinic-management
+    env: python
+    rootDir: clinic_management_app
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
