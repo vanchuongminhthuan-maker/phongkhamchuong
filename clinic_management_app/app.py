@@ -8,14 +8,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # ==========================
-# Tạo bảng khi chạy lần đầu (Render + Gunicorn)
-# ==========================
-@app.before_first_request
-def init_db():
-    db.create_all()
-
-# ==========================
-# Database Models
+# Models
 # ==========================
 class Patient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -32,6 +25,15 @@ class Medicine(db.Model):
     price = db.Column(db.Float, default=0.0)
     total_cost = db.Column(db.Float, default=0.0)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
+
+# ✅ TẠO BẢNG NGAY KHI KHỞI ĐỘNG (an toàn trên Render + Gunicorn)
+with app.app_context():
+    db.create_all()
+
+# (Tuỳ chọn) vẫn có thể giữ, nhưng không còn bắt buộc
+# @app.before_first_request
+# def init_db():
+#     db.create_all()
 
 # ==========================
 # Routes
@@ -59,7 +61,6 @@ def add_medicine():
     quantity = int(request.form['quantity'])
     price = float(request.form['price'])
     total_cost = float(request.form['total_cost'])
-
     medicine = Medicine(name=name, form=form, quantity=quantity, price=price, total_cost=total_cost)
     db.session.add(medicine)
     db.session.commit()
@@ -71,5 +72,6 @@ def search_patient():
     results = Patient.query.filter(Patient.name.like(f"%{keyword}%")).all()
     return jsonify([{'id': p.id, 'name': p.name, 'dob': p.dob, 'phone': p.phone} for p in results])
 
+# (chỉ dùng khi chạy local bằng `python app.py`)
 if __name__ == '__main__':
     app.run()
